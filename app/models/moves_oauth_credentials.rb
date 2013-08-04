@@ -1,0 +1,2 @@
+class MovesOauthCredentials < OauthCredentials
+end
