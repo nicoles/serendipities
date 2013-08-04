@@ -9,6 +9,7 @@ gem 'jquery-rails'
 gem 'unicorn'
 gem 'moves'
 gem 'omniauth-moves', github: 'nickelser/omniauth-moves'
+gem 'leaflet-rails'
 
 group :development, :test do
   gem 'pry-rails'

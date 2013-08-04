@@ -77,6 +77,7 @@ GEM
     jwt (0.1.8)
       multi_json (>= 1.5)
     kgio (2.8.0)
+    leaflet-rails (0.6.2)
     mail (2.5.4)
       mime-types (~> 1.16)
       treetop (~> 1.4.8)
@@ -179,6 +180,7 @@ DEPENDENCIES
   dotenv-rails
   haml-rails
   jquery-rails
+  leaflet-rails
   moves
   omniauth-moves!
   pg

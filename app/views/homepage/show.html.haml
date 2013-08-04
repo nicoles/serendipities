@@ -1,2 +1,9 @@
 =debug(current_user)
 =debug(current_user.oauth_credentials)
+.map#map
+
+:javascript
+  data = #{current_user.moves.daily_storyline("2013-6-12", :trackPoints => true).to_json};
+  console.log(data);
+
+=link_to "logout", logout_path

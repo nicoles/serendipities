@@ -21,4 +21,8 @@ class User < ActiveRecord::Base
 
   has_one :moves_oauth_credentials
   has_many :oauth_credentials, class_name: OauthCredentials
+
+  def moves
+    @moves ||= Moves::Client.new(moves_oauth_credentials.token)
+  end
 end
