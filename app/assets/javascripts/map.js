@@ -1,34 +1,45 @@
 Map = {};
 
 Map.initialize = function(){
-  this.map = L.map('map').setView([37.775, -122.418], 13);
-  L.tileLayer.provider('Stamen.Toner').addTo(this.map);
+  var myMap = L.map('map').setView([37.775, -122.418], 13);
+  L.tileLayer.provider('Stamen.Toner').addTo(myMap);
 
-  var points = [];
+  var placePoints = [];
+
   data[0].segments.forEach(function(segment){
     var lat, lng;
     if (segment.place){
       lat = segment.place.location.lat;
       lng = segment.place.location.lon;
-      points.push(new L.LatLng(lat,lng));
+      placePoints.push(new L.LatLng(lat,lng));
     }
     if (segment.activities){
       segment.activities.forEach(function(activity){
-        activity.trackPoints.forEach(function(trackPoint){
-          lat = trackPoint.lat;
-          lng = trackPoint.lon;
-          points.push(new L.LatLng(lat,lng));
-        });
+        //wlk, run, trp, cyc
+        if (activity.activity == 'wlk'){
+          var walkPoints = [];
+          // console.log(this);
+          activity.trackPoints.forEach(function(trackPoint){
+            lat = trackPoint.lat;
+            lng = trackPoint.lon;
+            walkPoints.push(new L.LatLng(lat,lng));
+          });
+          var walkline = L.polyline(walkPoints, {color: 'blue'}).addTo(myMap);
+        }
+        if (activity.activity == 'trp'){
+          var tripPoints = [];
+          // console.log(this);
+          activity.trackPoints.forEach(function(trackPoint){
+            lat = trackPoint.lat;
+            lng = trackPoint.lon;
+            tripPoints.push(new L.LatLng(lat,lng));
+          });
+          var tripline = L.polyline(tripPoints, {color: 'red'}).addTo(myMap);
+        }
       });
     }
   });
-  // create a red polyline from an arrays of LatLng points
-  var polyline = L.polyline(points, {color: 'red'}).addTo(this.map);
-
-  // zoom the map to the polyline
-  // this.map.fitBounds(polyline.getBounds());
 };
-
 
 $(function(){
   Map.initialize();
