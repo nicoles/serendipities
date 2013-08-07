@@ -24,7 +24,7 @@ Map.initialize = function(){
             lng = trackPoint.lon;
             walkPoints.push(new L.LatLng(lat,lng));
           });
-          var walkline = L.polyline(walkPoints, {color: 'blue'}).addTo(myMap);
+          var walkline = L.polyline(walkPoints, {color: 'green'}).addTo(myMap);
         }
         if (activity.activity == 'trp'){
           var tripPoints = [];
@@ -34,7 +34,7 @@ Map.initialize = function(){
             lng = trackPoint.lon;
             tripPoints.push(new L.LatLng(lat,lng));
           });
-          var tripline = L.polyline(tripPoints, {color: 'red'}).addTo(myMap);
+          var tripline = L.polyline(tripPoints, {color: 'gray'}).addTo(myMap);
         }
       });
     }
