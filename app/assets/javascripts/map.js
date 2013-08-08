@@ -36,6 +36,15 @@ Map.initialize = function(){
           });
           var tripline = L.polyline(tripPoints, {color: 'gray'}).addTo(myMap);
         }
+        if (activity.activity == 'run'){
+            var runPoints =[];
+            activity.trackPoints.forEach(function(trackpoint){
+                lat = trackPoint.lat;
+                lng = trackPoint.lon;
+                runPoints.push(new L.LatLng(lat,lng));
+            });
+            var runLine = L.polyline(runPoints, {color: 'red'}).addTo(myMap);
+        }
       });
     }
   });
