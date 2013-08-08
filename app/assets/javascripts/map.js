@@ -36,6 +36,16 @@ Map.initialize = function(){
           });
           var tripline = L.polyline(tripPoints, {color: 'gray'}).addTo(myMap);
         }
+        if (activity.activity == 'cyc'){
+          var cyclePoints = [];
+          console.log(this);
+          activity.trackPoints.forEach(function(trackPoint){
+            lat = trackPoint.lat;
+            lng = trackPoint.lon;
+            cyclePoints.push(new L.LatLng(lat,lng));
+          });
+          var cycleline = L.polyline(cyclePoints, {color: 'blue'}).addTo(myMap);
+        }
       });
     }
   });
