@@ -1,4 +1,7 @@
-= date_field_tag 'Date'
+%form#map-date
+  = date_field_tag 'Date', Date.today, class: 'date'
+  = submit_tag 'Go!'
+
 = link_to "logout", logout_path
 
 .map#map

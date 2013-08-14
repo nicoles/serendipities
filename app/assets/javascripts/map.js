@@ -1,65 +1,77 @@
-Map = {};
+function Map(id){
+  this.id = id;
+  this.leaflet = L.map('map'); // .setView([37.775, -122.418], 13);
+  L.tileLayer.provider('Stamen.Toner').addTo(this.leaflet);
+  this.segments = [];
+  this.activities = [];
+}
 
-Map.initialize = function(){
-  var myMap = L.map('map').setView([37.775, -122.418], 13);
-  L.tileLayer.provider('Stamen.Toner').addTo(myMap);
+Map.prototype.drawDay = function(day){
+  if (!day.segments) return this;
+  this.segments = day.segments;
 
-  var placePoints = [];
+  this.leaflet.setView([37.775, -122.418], 13);
 
-  data[0].segments.forEach(function(segment){
-    var lat, lng;
-    if (segment.place){
-      lat = segment.place.location.lat;
-      lng = segment.place.location.lon;
-      placePoints.push(new L.LatLng(lat,lng));
-    }
-    if (segment.activities){
-      segment.activities.forEach(function(activity){
-        //wlk, run, trp, cyc
-        if (activity.activity == 'wlk'){
-          var walkPoints = [];
-          // console.log(this);
-          activity.trackPoints.forEach(function(trackPoint){
-            lat = trackPoint.lat;
-            lng = trackPoint.lon;
-            walkPoints.push(new L.LatLng(lat,lng));
-          });
-          var walkline = L.polyline(walkPoints, {color: 'green'}).addTo(myMap);
-        }
-        if (activity.activity == 'trp'){
-          var tripPoints = [];
-          // console.log(this);
-          activity.trackPoints.forEach(function(trackPoint){
-            lat = trackPoint.lat;
-            lng = trackPoint.lon;
-            tripPoints.push(new L.LatLng(lat,lng));
-          });
-          var tripline = L.polyline(tripPoints, {color: 'gray'}).addTo(myMap);
-        }
-        if (activity.activity == 'cyc'){
-          var cyclePoints = [];
-          console.log(this);
-          activity.trackPoints.forEach(function(trackPoint){
-            lat = trackPoint.lat;
-            lng = trackPoint.lon;
-            cyclePoints.push(new L.LatLng(lat,lng));
-          });
-          var cycleline = L.polyline(cyclePoints, {color: 'blue'}).addTo(myMap);
-        }
-        if (activity.activity == 'run'){
-            var runPoints =[];
-            activity.trackPoints.forEach(function(trackpoint){
-                lat = trackPoint.lat;
-                lng = trackPoint.lon;
-                runPoints.push(new L.LatLng(lat,lng));
-            });
-            var runLine = L.polyline(runPoints, {color: 'red'}).addTo(myMap);
-        }
-      });
-    }
-  });
+  this.segments.forEach(function(segment){
+    if (segment.place) this.addPlaceSegment(segment);
+    if (segment.activities) this.addActivitiesSegment(segment);
+  }, this);
 };
 
+Map.prototype.addPlaceSegment = function(segment){
+
+};
+
+Map.prototype.addActivitiesSegment = function(segment){
+  this.activities = this.activities.concat(segment.activities);
+  segment.activities.forEach(function(activity){
+    this.addActivity(activity);
+  }, this);
+};
+
+Map.ActivityColors = {
+  'wlk':'green',
+  'trp':'gray',
+  'cyc':'blue',
+  'run':'red'
+};
+
+Map.prototype.addActivity = function(activity){
+  var trackPoints, color;
+
+  trackPoints = activity.trackPoints.map(function(trackPoint){
+    return new L.LatLng(trackPoint.lat,trackPoint.lon);
+  });
+
+  color = Map.ActivityColors[activity.activity] || 'black';
+  L.polyline(trackPoints, {color: color}).addTo(this.leaflet);
+};
+
+
 $(function(){
-  Map.initialize();
+
+  map = new Map('map');
+
+  $('#map-date').submit(function(event) {
+    event.preventDefault();
+    var date = $(this).find('input.date').val();
+
+    var request = $.ajax({
+      method: 'GET',
+      url: '/mapdata',
+      dataType: 'json',
+      data: {date:date}
+    });
+
+    request.done(function(data){
+      map.drawDay(data);
+    });
+  });
+
+
+
 });
+
+
+
+
