@@ -1,8 +1,10 @@
-== Serendipities
+Serendipities
+=============
 
 For now, a moves-app viewer. Soon... better!
 
 Goals
+-----
 
 * Ingest moves data to the db
 * Tie a moves user to a twitter account
