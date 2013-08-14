@@ -9,13 +9,18 @@ function Map(id){
 Map.prototype.drawDay = function(day){
   if (!day.segments) return this;
   this.segments = day.segments;
-
-  this.leaflet.setView([37.775, -122.418], 13);
+  if (this.leaflet.hasLayer(this.dayLayer)){
+    this.dayLayer.clearLayers();
+  }
+  this.dayLayer = L.featureGroup();
 
   this.segments.forEach(function(segment){
     if (segment.place) this.addPlaceSegment(segment);
     if (segment.activities) this.addActivitiesSegment(segment);
   }, this);
+
+  this.dayLayer.addTo(this.leaflet);
+  this.leaflet.fitBounds(this.dayLayer.getBounds());
 };
 
 Map.prototype.addPlaceSegment = function(segment){
@@ -44,7 +49,7 @@ Map.prototype.addActivity = function(activity){
   });
 
   color = Map.ActivityColors[activity.activity] || 'black';
-  L.polyline(trackPoints, {color: color}).addTo(this.leaflet);
+  L.polyline(trackPoints, {color: color}).addTo(this.dayLayer);
 };
 
 
