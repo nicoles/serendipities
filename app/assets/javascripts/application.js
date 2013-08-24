@@ -14,4 +14,5 @@
 //= require jquery_ujs
 //= require leaflet.js
 //= require leaflet-providers
+//= require d3
 //= require_tree .

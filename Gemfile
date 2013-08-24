@@ -10,6 +10,7 @@ gem 'unicorn'
 gem 'moves'
 gem 'omniauth-moves', github: 'nickelser/omniauth-moves'
 gem 'leaflet-rails'
+gem 'd3_rails'
 
 group :development, :test do
   gem 'pry-rails'
