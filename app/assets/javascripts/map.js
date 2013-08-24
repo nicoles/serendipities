@@ -10,19 +10,17 @@ mo.map = function() {
         activities = [],
         dayLayer;
 
-    function initializeMap() {
         leaflet = L.map('map');
         L.tileLayer.provider('Stamen.TonerLite').addTo(leaflet);
-        svg = d3.select(this.leaflet.getPanes().overlayPane).append("svg"),
+        svg = d3.select(leaflet.getPanes().overlayPane).append("svg"),
         g = svg.append("g").attr("class", "leaflet-zoom-hide");
 
-        // Map.ActivityColors = {
-        //     'wlk':'#ff00ff',
-        //     'trp':'black',
-        //     'cyc':'#00ffff',
-        //     'run':'#ffff00'
-        // };
-    }
+    // Map.ActivityColors = {
+    //     'wlk':'#ff00ff',
+    //     'trp':'black',
+    //     'cyc':'#00ffff',
+    //     'run':'#ffff00'
+    // };
 
 // {"type":"FeatureCollection",
 // "features":[{
@@ -32,7 +30,6 @@ mo.map = function() {
 //     "coordinates":[[[[74.92,37.24],[74.57,37.0
 
     self.drawDay = function(day){
-        console.log(day)
         if (!day.segments) return;
 
         segments = day.segments;
@@ -93,24 +90,19 @@ mo.map = function() {
             return new L.LatLng(trackPoint.lat,trackPoint.lon);
         });
 
-        color = Map.ActivityColors[activity.activity] || 'gray';
+        color = 'gray';
         L.polyline(trackPoints, {color: color}).addTo(dayLayer);
     };
 
     self.addPlace = function(place){
         if (place.name)
-            L.marker([place.location.lat, place.location.lon],{title:place.name}).addTo(this.dayLayer);
+            L.marker([place.location.lat, place.location.lon],{title:place.name}).addTo(dayLayer);
         else
-            L.circle([place.location.lat, place.location.lon],10).addTo(this.dayLayer);
+            L.circle([place.location.lat, place.location.lon],10).addTo(dayLayer);
     };
 
-    console.log("inside")
-    self.makeFormClicky = function(){
-        console.log($("#map-data"))
-        $('#map-date').submit(function(event) {
-        console.log("d")
+    $('#map-date').submit(function(event) {
         event.preventDefault();
-        console.log("date")
         var date = $(this).find('input.date').val();
 
         var request = $.ajax({
@@ -121,13 +113,9 @@ mo.map = function() {
         });
 
         request.done(function(data){
-            initializeMap();
             self.drawDay(data);
         });
     });
-    }
 
     return self;
 }();
-
-mo.map.makeFormClicky();
