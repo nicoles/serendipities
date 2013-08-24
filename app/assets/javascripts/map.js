@@ -1,6 +1,6 @@
 function Map(id){
   this.id = id;
-  this.leaflet = L.map('map'); // .setView([37.775, -122.418], 13);
+  this.leaflet = L.map('map');
   this.tiles = L.tileLayer.provider('Stamen.TonerLite');
 
   this.tiles.addTo(this.leaflet);
