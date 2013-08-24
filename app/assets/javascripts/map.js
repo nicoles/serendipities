@@ -1,7 +1,9 @@
 function Map(id){
   this.id = id;
   this.leaflet = L.map('map'); // .setView([37.775, -122.418], 13);
-  L.tileLayer.provider('Stamen.Toner').addTo(this.leaflet);
+  this.tiles = L.tileLayer.provider('Stamen.TonerLite');
+
+  this.tiles.addTo(this.leaflet);
   this.segments = [];
   this.activities = [];
 }
@@ -36,7 +38,7 @@ Map.prototype.addActivitiesSegment = function(segment){
 
 Map.ActivityColors = {
   'wlk':'green',
-  'trp':'gray',
+  'trp':'black',
   'cyc':'blue',
   'run':'red'
 };
@@ -48,7 +50,7 @@ Map.prototype.addActivity = function(activity){
     return new L.LatLng(trackPoint.lat,trackPoint.lon);
   });
 
-  color = Map.ActivityColors[activity.activity] || 'black';
+  color = Map.ActivityColors[activity.activity] || 'gray';
   L.polyline(trackPoints, {color: color}).addTo(this.dayLayer);
 };
 
