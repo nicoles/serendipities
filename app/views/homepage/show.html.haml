@@ -5,8 +5,3 @@
 = link_to "logout", logout_path
 
 .map#map
-
-:javascript
-  data = #{current_user.moves.daily_storyline("2013-7-31", :trackPoints => true).to_json};
-  console.log(data);
-

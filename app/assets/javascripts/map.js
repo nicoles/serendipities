@@ -1,15 +1,28 @@
-function Map(id){
-  this.id = id;
-  this.leaflet = L.map('map'); // .setView([37.775, -122.418], 13);
-  this.tiles = L.tileLayer.provider('Stamen.TonerLite');
-  this.svg = d3.select(this.leaflet.getPanes().overlayPane).append("svg");
-  this.g = this.svg.append("g").attr("class", "leaflet-zoom-hide");
+var mo = mo || {};
 
-  this.tiles.addTo(this.leaflet);
-  this.segments = [];
-  this.places = [];
-  this.activities = [];
-}
+mo.map = function() {
+
+    var leaflet,
+        svg,
+        g,
+        segments = [],
+        places = [],
+        activities = [],
+        dayLayer;
+
+    function initializeMap() {
+        leaflet = L.map('map');
+        L.tileLayer.provider('Stamen.TonerLite').addTo(leaflet);
+        svg = d3.select(this.leaflet.getPanes().overlayPane).append("svg"),
+        g = svg.append("g").attr("class", "leaflet-zoom-hide");
+
+        // Map.ActivityColors = {
+        //     'wlk':'#ff00ff',
+        //     'trp':'black',
+        //     'cyc':'#00ffff',
+        //     'run':'#ffff00'
+        // };
+    }
 
 // {"type":"FeatureCollection",
 // "features":[{
@@ -18,73 +31,103 @@ function Map(id){
 //     "type":"MultiPolygon",
 //     "coordinates":[[[[74.92,37.24],[74.57,37.0
 
-Map.prototype.drawDay = function(day){
-  if (!day.segments) return this;
-  this.segments = day.segments;
-  if (this.leaflet.hasLayer(this.dayLayer)){
-    this.dayLayer.clearLayers();
-  }
-  this.dayLayer = L.featureGroup();
+    self.drawDay = function(day){
+        console.log(day)
+        if (!day.segments) return;
 
-  this.segments.forEach(function(segment){
-    if (segment.place) this.addPlace(segment.place);
-    if (segment.activities) this.addActivitiesSegment(segment);
-  }, this);
+        segments = day.segments;
+        if (leaflet.hasLayer(dayLayer)){
+            dayLayer.clearLayers();
+        }
+        dayLayer = L.featureGroup();
 
-  this.dayLayer.addTo(this.leaflet);
-  this.leaflet.fitBounds(this.dayLayer.getBounds());
-};
+        segments.forEach(function(segment){
+            if (segment.place) self.addPlace(segment.place);
+            if (segment.activities) self.addActivitiesSegment(segment);
+        });
 
-Map.prototype.addActivitiesSegment = function(segment){
-  this.activities = this.activities.concat(segment.activities);
-  segment.activities.forEach(function(activity){
-    this.addActivity(activity);
-  }, this);
-};
+        dayLayer.addTo(leaflet);
+        leaflet.fitBounds(dayLayer.getBounds());
 
-Map.ActivityColors = {
-  'wlk':'#ff00ff',
-  'trp':'black',
-  'cyc':'#00ffff',
-  'run':'#ffff00'
-};
+        console.log(activities)
+        // var bounds = d3.geo.bounds(collection),
+        //     path = d3.geo.path().projection(project);
 
-Map.prototype.addActivity = function(activity){
-  var trackPoints, color;
+        // var feature = g.selectAll("path")
+        //   .data(collection.features)
+        // .enter().append("path");
 
-  trackPoints = activity.trackPoints.map(function(trackPoint){
-    return new L.LatLng(trackPoint.lat,trackPoint.lon);
-  });
+        // map.on("viewreset", reset);
+        // reset();
 
-  color = Map.ActivityColors[activity.activity] || 'gray';
-  L.polyline(trackPoints, {color: color}).addTo(this.dayLayer);
-};
+        function reset() {
+            var bottomLeft = project(bounds[0]),
+                topRight = project(bounds[1]);
 
-Map.prototype.addPlace = function(place){
-  if (place.name)
-    L.marker([place.location.lat, place.location.lon],{title:place.name}).addTo(this.dayLayer);
-  else
-    L.circle([place.location.lat, place.location.lon],10).addTo(this.dayLayer);
-};
+            svg .attr("width", topRight[0] - bottomLeft[0])
+                .attr("height", bottomLeft[1] - topRight[1])
+                .style("margin-left", bottomLeft[0] + "px")
+                .style("margin-top", topRight[1] + "px");
 
+            g   .attr("transform", "translate(" + -bottomLeft[0] + "," + -topRight[1] + ")");
 
-$(function(){
+            feature.attr("d", path);
+        }
+        function project(x) {
+            var point = map.latLngToLayerPoint(new L.LatLng(x[1], x[0]));
+            return [point.x, point.y];
+        }
+    };
 
-  map = new Map('map');
+    self.addActivitiesSegment = function(segment){
+        activities = activities.concat(segment.activities);
+        segment.activities.forEach(function(activity){
+            self.addActivity(activity);
+        });
+    };
 
-  $('#map-date').submit(function(event) {
-    event.preventDefault();
-    var date = $(this).find('input.date').val();
+    self.addActivity = function(activity){
+        var trackPoints, color;
 
-    var request = $.ajax({
-      method: 'GET',
-      url: '/mapdata',
-      dataType: 'json',
-      data: {date:date}
+        trackPoints = activity.trackPoints.map(function(trackPoint){
+            return new L.LatLng(trackPoint.lat,trackPoint.lon);
+        });
+
+        color = Map.ActivityColors[activity.activity] || 'gray';
+        L.polyline(trackPoints, {color: color}).addTo(dayLayer);
+    };
+
+    self.addPlace = function(place){
+        if (place.name)
+            L.marker([place.location.lat, place.location.lon],{title:place.name}).addTo(this.dayLayer);
+        else
+            L.circle([place.location.lat, place.location.lon],10).addTo(this.dayLayer);
+    };
+
+    console.log("inside")
+    self.makeFormClicky = function(){
+        console.log($("#map-data"))
+        $('#map-date').submit(function(event) {
+        console.log("d")
+        event.preventDefault();
+        console.log("date")
+        var date = $(this).find('input.date').val();
+
+        var request = $.ajax({
+            method: 'GET',
+            url: '/mapdata',
+            dataType: 'json',
+            data: {date:date}
+        });
+
+        request.done(function(data){
+            initializeMap();
+            self.drawDay(data);
+        });
     });
+    }
 
-    request.done(function(data){
-      map.drawDay(data);
-    });
-  });
-});
+    return self;
+}();
+
+mo.map.makeFormClicky();
