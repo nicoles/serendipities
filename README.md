@@ -15,6 +15,8 @@ Setup
 
 First, get Ruby 2.0! I like [rvm](http://rvm.io)
 
+    \curl -L https://get.rvm.io | bash -s stable --ruby=2.0.0
+
 Then, you'll need to sign up for a moves dev account, but it's super easy!
 Head to https://dev.moves-app.com/apps and create an app.
 Set your redirect URI to http://0.0.0.0:3000/auth/moves/callback and make a file in the root of the serendipities directory called `.env`
