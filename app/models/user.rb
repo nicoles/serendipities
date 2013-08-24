@@ -1,4 +1,5 @@
 class User < ActiveRecord::Base
+  has_many :storylines
 
   def self.find_or_create_from_auth_hash(auth_hash)
     case auth_hash["provider"]
