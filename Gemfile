@@ -1,4 +1,5 @@
 source 'https://rubygems.org'
+ruby "2.0.0"
 
 gem 'rails', '4.0.0'
 gem 'pg'
@@ -10,6 +11,7 @@ gem 'unicorn'
 gem 'moves'
 gem 'omniauth-moves', github: 'nickelser/omniauth-moves'
 gem 'leaflet-rails'
+gem 'rails_12factor', group: :production
 
 group :development, :test do
   gem 'pry-rails'
