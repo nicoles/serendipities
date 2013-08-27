@@ -1,8 +1,14 @@
-%form#map-date
-  = date_field_tag 'Date', Date.today, class: 'date'
-  = submit_tag 'Go!'
-
-= link_to "logout", logout_path
-
-.map#map
-
+.token
+  token:
+  = current_user.moves_oauth_credentials.token
+.uid
+  uid:
+  = current_user.moves_oauth_credentials.uid
+.refresh_token
+  refresh_token:
+  = current_user.moves_oauth_credentials.refresh_token
+.expires_at
+  expires_at:
+  = current_user.moves_oauth_credentials.expires_at
+.logout
+  = link_to "logout", logout_path
