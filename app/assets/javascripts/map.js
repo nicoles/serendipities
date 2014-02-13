@@ -4,17 +4,16 @@ function Map(id){
   this.tiles = L.tileLayer.provider('Stamen.TonerLite');
 
   this.tiles.addTo(this.leaflet);
+  this.dates = [];
   this.segments = [];
   this.activities = [];
 }
 
 Map.prototype.drawDay = function(day){
+  day = $.parseJSON(day);
   if (!day.segments) return this;
   this.segments = day.segments;
-  if (this.leaflet.hasLayer(this.dayLayer)){
-    this.dayLayer.clearLayers();
-  }
-  this.dayLayer = L.featureGroup();
+
 
   this.segments.forEach(function(segment){
     if (segment.place) this.addPlaceSegment(segment);
@@ -23,6 +22,18 @@ Map.prototype.drawDay = function(day){
 
   this.dayLayer.addTo(this.leaflet);
   this.leaflet.fitBounds(this.dayLayer.getBounds());
+};
+
+Map.prototype.drawDates = function(data){
+  if (!data.dates) return this;
+  this.dates = data.dates;
+  if (this.leaflet.hasLayer(this.dayLayer)){
+    this.dayLayer.clearLayers();
+  }
+  this.dayLayer = L.featureGroup();
+  $.each(data.dates, function(index, date){
+    map.drawDay(date);
+  });
 };
 
 Map.prototype.addPlaceSegment = function(segment){
@@ -61,17 +72,21 @@ $(function(){
 
   $('#map-date').submit(function(event) {
     event.preventDefault();
-    var date = $(this).find('input.date').val();
+    var start_date = $(this).find('input.start').val();
+    var end_date = $(this).find('input.end').val();
 
     var request = $.ajax({
       method: 'GET',
       url: '/mapdata',
       dataType: 'json',
-      data: {date:date}
+      data: {
+        start_date:start_date,
+        end_date:end_date
+      }
     });
 
     request.done(function(data){
-      map.drawDay(data);
+      map.drawDates(data);
     });
   });
 

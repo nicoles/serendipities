@@ -2,14 +2,22 @@ class MapdataController < ApplicationController
 
   def show
     # params[:date] ||= Date.today.to_s
-    params[:date] ||= 4.days.ago.to_date.to_s
-    if !current_user.storylines.find_by_story_date(params[:date]).blank?
-      data = current_user.storylines.find_by_story_date(params[:date]).moves_data
-    else
-      data = current_user.moves.daily_storyline(params[:date], :trackPoints => true).first
-      current_user.storylines.create(:story_date=> params[:date], :moves_data => data)
+    start_date = params[:start_date] ||= 4.days.ago.to_date
+    end_date = params[:end_date] ||= 4.days.ago.to_date
+    start_date = Date.parse(start_date)
+    end_date = Date.parse(end_date)
+    @moves_storylines = []
+    start_date.upto(end_date) do |date|
+      if !current_user.storylines.find_by_story_date(date).blank?
+        @moves_storylines << JSON[current_user.storylines.find_by_story_date(date).moves_data]
+      else
+        moves_storyline = current_user.moves.daily_storyline(date, :trackPoints => true).first
+        current_user.storylines.create(:story_date=> date, :moves_data => moves_storyline)
+        @moves_storylines << JSON[moves_storyline]
+      end
     end
-    render json: data
+    moves_storylines = {dates: @moves_storylines}
+    render json: moves_storylines
   end
 
 end
