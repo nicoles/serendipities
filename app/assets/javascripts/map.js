@@ -70,6 +70,10 @@ $(function(){
 
   map = new Map('map');
 
+  var height = $(window).height();
+  var scale = 0.9;
+  $(".map").css('height', height * scale);
+
   $('#map-date').submit(function(event) {
     event.preventDefault();
     var start_date = $(this).find('input.start').val();
@@ -89,11 +93,14 @@ $(function(){
       map.drawDates(data);
     });
   });
-
-
-
 });
 
+
+$(window).resize(function(){
+  var height = $(window).height();
+  var scale = 0.9;
+  $(".map").css('height', height * scale);
+});
 
 
 

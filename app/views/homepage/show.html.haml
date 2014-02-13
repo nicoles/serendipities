@@ -1,9 +1,12 @@
-%form#map-date
-  = date_field_tag 'start', Date.today, class: 'start'
-  = date_field_tag 'end', Date.today, class: 'end'
-  = submit_tag 'Go!'
+.controls
+  %form#map-date
+    = date_field_tag 'start', Date.yesterday, class: 'start'
+    = date_field_tag 'end', Date.yesterday, class: 'end'
+    = submit_tag 'Go!'
 
-= link_to "logout", logout_path
+  Notes: Requests cache the moves data to the db, to reduce load on moves' api, so you probably don't want to search for the current day. Loading a ton of days will take a while to load.
+  %a{ :href => 'https://github.com/nicoles/serendipities' } Help make this suck less!
+  = link_to "logout", logout_path
 
 .map#map
 
