@@ -1,79 +1,87 @@
-div.timeline-frame
-  -moz-box-sizing: border-box
-  box-sizing: border-box
-  overflow: hidden
-  position: relative
-  height: 88px
+div
+  .timeline-frame
+    -moz-box-sizing: border-box
+    box-sizing: border-box
+    overflow: hidden
+    position: relative
+    height: 88px
 
-div.timeline-content
-  overflow: hidden
-  position: relative
-  font-variant: small-caps
-  cursor: default
-  transition: 0.23s all
+  .timeline-content
+    overflow: hidden
+    position: relative
+    font-variant: small-caps
+    cursor: default
+    transition: 0.23s all
 
-div.timeline-axis
-  -moz-box-sizing: border-box
-  border-color: #888
-  border-top-style: solid
-  border-width: 1px
-  box-sizing: border-box
+  .timeline-axis
+    -moz-box-sizing: border-box
+    border-color: #888
+    border-top-style: solid
+    border-width: 1px
+    box-sizing: border-box
 
-div.timeline-axis-grid
-  -moz-box-sizing: border-box
-  border-left-style: solid
-  border-width: 1px
-  box-sizing: border-box
+  .timeline-axis-grid
+    -moz-box-sizing: border-box
+    border-left-style: solid
+    border-width: 1px
+    box-sizing: border-box
 
-div.timeline-axis-grid-minor
-  border-color: #999
+  .timeline-axis-grid-minor
+    border-color: #999
 
-div.timeline-axis-grid-major
-  border-color: #ccc
-  border-width: 2px
+  .timeline-axis-grid-major
+    border-color: #ccc
+    border-width: 2px
 
-// Text for each date
-div.timeline-axis-text
-  color: #fff
-  padding: 3px
-  white-space: nowrap
+  // Text for each date
+  .timeline-axis-text
+    color: #fff
+    padding: 3px
+    white-space: nowrap
 
-div.timeline-axis-text-minor
-  font-weight: 100
+  .timeline-axis-text-minor
+    font-weight: 100
 
-div.timeline-axis-text-major
-  font-weight: 900
+  .timeline-axis-text-major
+    font-weight: 900
 
-// events
+  // --- events ---
+  &.timeline-event
+    position: relative
+    -moz-box-sizing: border-box
+    background-color: rgba(255,0,0,0.8)
+    box-sizing: border-box
+    color: #fff
+    display: inline-block
+    height: 88px
+    text-align: center
+    &.cache-range
+      background-color: rgba(0,0,0,0.4)
+      color: #888
+      height: 30px
+      border: none
 
-div.timeline-event
-  position: relative
-  -moz-box-sizing: border-box
-  background-color: rgba(255,0,255,0.4)  // #d5ddf6
-  box-sizing: border-box
-  color: #fff
-  display: inline-block
-  height: 88px
+  &.timeline-event-selected
+    border-color: #ff22c0
+    z-index: 999
+    outline: none
+    &.time-range
+      background-color: rgba(255,80,255,0.1)
 
-div.timeline-event-selected
-  background-color: rgba(255,80,255,0.5)
-  border-color: #ffc200
-  z-index: 999
+  /* TODO: use another color or pattern? */
+  .timeline-event-cluster
+    background: url('img/cluster_bg.png') #97b0f8
+    color: #ffffff
 
-/* TODO: use another color or pattern? */
-div.timeline-event-cluster
-  background: url('img/cluster_bg.png') #97b0f8
-  color: #ffffff
+  .timeline-event-cluster .timeline-event-dot
+    border-color: #d5ddf6
 
-div.timeline-event-cluster div.timeline-event-dot
-  border-color: #d5ddf6
-
-div.timeline-event-box
-  -moz-border-radius: 5px /* For Firefox 3.6 and older */
-  border-radius: 5px
-  border-style: solid
-  border-width: 1px
-  text-align: center
+  .timeline-event-box
+    -moz-border-radius: 5px /* For Firefox 3.6 and older */
+    border-radius: 5px
+    border-style: solid
+    border-width: 1px
+    text-align: center
 
 div.timeline-event-dot
   -moz-border-radius: 5px /* For Firefox 3.6 and older */

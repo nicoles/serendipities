@@ -28,16 +28,15 @@ class Map
     @leaflet.fitBounds(@dayLayer.getBounds())
 
   # Draw all the days within data, which is expected to be a JSON object
-  # containing a list of dates.
-  drawDates: (data) ->
+  # containing a list of day storylines.
+  drawDates: (data) =>
     return @ if not data.dates
 
     @dates = data.dates
     if @leaflet.hasLayer(@dayLayer)
       @dayLayer.clearLayers()
     @dayLayer = L.featureGroup()
-    $.each data.dates, (index, date) =>
-      @drawDay(date)
+    $.each data.dates, (index, date) => @drawDay(date)
 
   # TODO
   addPlaceSegment: (segment) ->
@@ -71,7 +70,20 @@ class TimeMachine
       'style': 'dot'
       'showCustomTime': true
       'unselectable': false
+      'selectable': false
       'eventMarginAxis': '-5px'
+  }
+
+  # (http://almende.github.io/chap-links-library/js/timeline/doc/)
+  # Obtain a singleton event for the MOVES query.
+  @TIME_RANGE: {
+      'className': 'time-range'
+      'start': new Date(2014,0) #year, month, day),
+      'end': new Date() #year, month+1, day),
+      'content': 'moves query'
+      'editable': true
+      'dragAreaWidth': 30
+      'animate': false
   }
 
   @DEFAULT_SELECTION: [{row: 0}]  # First element is the time-range query.
@@ -79,12 +91,11 @@ class TimeMachine
   constructor: ->
     @$start = $ 'input.start'  # Time input elements.
     @$end = $ 'input.end'      # The actual JSON requests are based on these.
-    @data = [];
-    @data.push(movesRange(2014, 0, 1))
     @$timeline = $('#timeline')[0]
     @timeline = new links.Timeline(@$timeline)
     @timeline.setCustomTime(new Date())
-
+    @data = [];
+    @data.push(TimeMachine.TIME_RANGE)
     # Update form inputs to match timeline range.
     @on 'changed', () =>
       [start, end] = @getRange()
@@ -109,6 +120,7 @@ class TimeMachine
       @timeline.changeItem 0, { end: end }
 
   render: ->
+    @refreshCache()
     @timeline.draw(@data, TimeMachine.TIMELINE_OPTIONS)
     @timeline.setSelection(TimeMachine.DEFAULT_SELECTION)
 
@@ -130,6 +142,45 @@ class TimeMachine
       start = end
     @$start.val(date2str start)
     @$end.val(date2str end)
+
+  refreshCache: ->
+    console.log 'refreshing timeline cache blocks'
+    fetchJSON('/cacheinfo')
+      .then (data) -> dates = data.dates.sort()
+      .then @setCached
+
+  # Create a set of cache indicators on the timeline for each range of
+  # contiguous dates.
+  setCached: (dates) =>
+    @_clearCacheBlocks()
+    dates = $.map dates, str2date
+    first = dates[0]
+    last = first
+    for date in dates
+      tmp = new Date(last)
+      tmp.setDate(tmp.getDate() + 1)
+      if date > tmp
+        @_addCacheBlock(first, last)
+        first = date
+      last = date
+    @_addCacheBlock(first, last)
+    @timeline.redraw()
+    @timeline.setSelection(TimeMachine.DEFAULT_SELECTION)
+
+  _addCacheBlock: (first, last) ->
+    console.log 'cached dates: ' + first + ' --> ' + last
+    @timeline.addItem {
+      className: 'cache-range'
+      start: first
+      end: last
+      content: '⇩'
+    }
+
+  _clearCacheBlocks: =>
+    total = @timeline.getData().length - 1
+    console.log total
+    # return if total < 1
+    # $.map [1..total], (i, el)=> @timeline.deleteItem(el, true)
 
   # Attach an event listener for this timeline.
   # Valid events:
@@ -154,42 +205,35 @@ str2date = (str) ->
   new Date(p[0], p[1]-1, p[2])
 
 
+fetchJSON = (url, params=null) ->
+  new Promise (F, R) ->
+    request = $.getJSON url, params
+    request.done F
+
+
 # Entry point. Create new map, set event hooks, and render.
 $ ->
+
   map = new Map('map')
   timeMachine = new TimeMachine('#timeline')
   # TODO: Implement a toggle between auto-updating the map.
   timeMachine.on 'timechange', () =>
+    event.preventDefault()
     # console.log('timechange')
   timeMachine.on 'timechanged', () =>
+    event.preventDefault()
     # console.log('timechanged')
   timeMachine.render()
 
   # Set-up AJAX handler.
   $('#map-date').submit (event) =>
     event.preventDefault()
-    requestJson = timeMachine.getDumpJSON()
-    # Sanitize date request.
-
     # Make request for all segments between |start_date| to |end_date|.
-    request = $.getJSON '/mapdata', data=timeMachine.getJumpJSON()
-    request.done (data) -> map.drawDates(data)
-
-
-
-# (http://almende.github.io/chap-links-library/js/timeline/doc/)
-
-# Obtain a singleton event for the MOVES query.
-movesRange = (year, month, day) =>
-  {
-    # 'className': 'moves-event',
-    'start': new Date(year, month, day),
-    'end': new Date(year, month+1, day),
-    'content': 'moves query',
-    'editable': true,
-    'dragAreaWidth': 30,
-    'animate': false
-  }
+    fetchJSON '/mapdata', data=timeMachine.getJumpJSON()
+      .then map.drawDates #(data) -> map.drawDates(data)
+      # TODO: There's something weird here which is preventing the timeline
+      # cache refresh from working. Fix later
+      # .then timeMachine.refreshCache
 
 
 # Auto-resize map when window changes size.
