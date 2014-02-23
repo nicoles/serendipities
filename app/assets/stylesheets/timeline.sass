@@ -3,6 +3,7 @@ div.timeline-frame
   box-sizing: border-box
   overflow: hidden
   position: relative
+  height: 88px
 
 div.timeline-content
   overflow: hidden
@@ -43,16 +44,19 @@ div.timeline-axis-text-minor
 div.timeline-axis-text-major
   font-weight: 900
 
+// events
+
 div.timeline-event
+  position: relative
   -moz-box-sizing: border-box
-  background-color: #d5ddf6
-  border-color: #97b0f8
+  background-color: rgba(255,0,255,0.4)  // #d5ddf6
   box-sizing: border-box
-  color: #1a1a1a
+  color: #fff
   display: inline-block
+  height: 88px
 
 div.timeline-event-selected
-  background-color: #fff785
+  background-color: rgba(255,80,255,0.5)
   border-color: #ffc200
   z-index: 999
 
