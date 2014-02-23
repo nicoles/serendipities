@@ -66,7 +66,7 @@ class TimeMachine
   @TIMELINE_OPTIONS: {
       'width': '100%'
       'zoomMin': 36000000  # Minimum is 1 hour (in ms)
-      'snapEvents': false
+      # 'snapEvents': false
       'style': 'dot'
       'showCustomTime': true
       'unselectable': false
@@ -78,8 +78,8 @@ class TimeMachine
   # Obtain a singleton event for the MOVES query.
   @TIME_RANGE: {
       'className': 'time-range'
-      'start': new Date(2014,0) #year, month, day),
-      'end': new Date() #year, month+1, day),
+      'start': null
+      'end': null
       'content': 'moves query'
       'editable': true
       'dragAreaWidth': 30
@@ -95,7 +95,11 @@ class TimeMachine
     @timeline = new links.Timeline(@$timeline)
     @timeline.setCustomTime(new Date())
     @data = [];
-    @data.push(TimeMachine.TIME_RANGE)
+    timeRange = TimeMachine.TIME_RANGE
+    timeRange.start = str2date @$start.val()
+    timeRange.end = str2date @$end.val()
+    @data.push(timeRange)
+
     # Update form inputs to match timeline range.
     @on 'changed', () =>
       [start, end] = @getRange()
@@ -154,16 +158,17 @@ class TimeMachine
   setCached: (dates) =>
     @_clearCacheBlocks()
     dates = $.map dates, str2date
+    console.log dates
     first = dates[0]
     last = first
     for date in dates
       tmp = new Date(last)
       tmp.setDate(tmp.getDate() + 1)
       if date > tmp
-        @_addCacheBlock(first, last)
+        @_addCacheBlock(first, tmp)
         first = date
       last = date
-    @_addCacheBlock(first, last)
+    @_addCacheBlock(first, tmp)
     @timeline.redraw()
     @timeline.setSelection(TimeMachine.DEFAULT_SELECTION)
 
@@ -216,7 +221,7 @@ $ ->
 
   map = new Map('map')
   timeMachine = new TimeMachine('#timeline')
-  # TODO: Implement a toggle between auto-updating the map.
+  # TODO: Use the 'custom time' bar as the animation feature.
   timeMachine.on 'timechange', () =>
     event.preventDefault()
     # console.log('timechange')
@@ -225,9 +230,12 @@ $ ->
     # console.log('timechanged')
   timeMachine.render()
 
-  # Set-up AJAX handler.
-  $('#map-date').submit (event) =>
+  # AJAX request to db or moves API for current time machine's segment data.
+  spaceTimeRequest = =>
     event.preventDefault()
+    if str2date(timeMachine.$end.val()) > new Date()
+      console.warn 'Cannot travel into the future yet.'
+      return
     # Make request for all segments between |start_date| to |end_date|.
     fetchJSON '/mapdata', data=timeMachine.getJumpJSON()
       .then map.drawDates #(data) -> map.drawDates(data)
@@ -235,6 +243,9 @@ $ ->
       # cache refresh from working. Fix later
       # .then timeMachine.refreshCache
 
+  $('#map-date').submit spaceTimeRequest
+  # TODO: Implement a toggle between auto-updating the map.
+  timeMachine.on 'changed', spaceTimeRequest
 
 # Auto-resize map when window changes size.
 $(window).resize ->
