@@ -13,5 +13,6 @@
 //= require jquery
 //= require jquery_ujs
 //= require leaflet.js
+//= require timeline-min.js
 //= require leaflet-providers
 //= require_tree .

@@ -1,6 +1,8 @@
 function Map(id){
   this.id = id;
-  this.leaflet = L.map('map');
+  this.leaflet = L.map('map')
+      .setView([10, 0], 3);  // Default whole-world view.
+
   this.tiles = L.tileLayer.provider('Stamen.TonerLite');
 
   this.tiles.addTo(this.leaflet);
@@ -70,9 +72,9 @@ $(function(){
 
   map = new Map('map');
 
-  var height = $(window).height();
-  var scale = 0.9;
-  $(".map").css('height', height * scale);
+  // var height = $(window).height();
+  // var scale = 0.9;
+  // $(".map").css('height', height * scale);
 
   $('#map-date').submit(function(event) {
     event.preventDefault();
@@ -96,11 +98,10 @@ $(function(){
 });
 
 
+// Auto-resize map when window changes size.
 $(window).resize(function(){
   var height = $(window).height();
   var scale = 0.9;
   $(".map").css('height', height * scale);
 });
-
-
 
