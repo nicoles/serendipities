@@ -71,6 +71,7 @@ class TimeMachine
       'style': 'dot'
       'showCustomTime': true
       'unselectable': false
+      'eventMarginAxis': '-5px'
   }
 
   @DEFAULT_SELECTION: [{row: 0}]  # First element is the time-range query.
@@ -83,17 +84,29 @@ class TimeMachine
     @$timeline = $('#timeline')[0]
     @timeline = new links.Timeline(@$timeline)
     @timeline.setCustomTime(new Date())
+
     # Update form inputs to match timeline range.
-    @on 'changed', (e) =>
-      event.preventDefault()
+    @on 'changed', () =>
       [start, end] = @getRange()
-      @$start.val(start)
-      @$end.val(end)
-    # Update timeline range when form inputs change.
+      @setDial(start, end)
+
+    # Update timeline range when form inputs change. Also ensure start <= end
+    # because we don't need time paradoxes.
     @$start.change =>
-      @timeline.changeItem 0, { start: str2date(@$start.val()) }
+      start = str2date @$start.val()
+      end = str2date @$end.val()
+      if start > end
+        start = end
+        @$start.val(date2str start)
+      @timeline.changeItem 0, { start: start }
+
     @$end.change =>
-      @timeline.changeItem 0, { end: str2date(@$end.val()) }
+      start = str2date @$start.val()
+      end = str2date @$end.val()
+      if end < start
+        end = start
+        @$end.val(date2str end)
+      @timeline.changeItem 0, { end: end }
 
   render: ->
     @timeline.draw(@data, TimeMachine.TIMELINE_OPTIONS)
@@ -101,17 +114,22 @@ class TimeMachine
 
   # Returns a pair of Date objects describing the start and end dials on this
   # time machine.
-  getRawRange: ->
+  getRange: ->
     r = @timeline.getData(0)[0]
     [r.start, r.end]
-
-  # Returns a pair of string-formatted dates.
-  getRange: -> $.map @getRawRange(), (e,i) -> date2str(e)
 
   getJumpJSON: -> {
       start_date: @$start.val()
       end_date: @$end.val()
   }
+
+  # Set the dials on this time machine.
+  setDial: (start, end) ->
+    if start > end  # No time paradoxes please.
+      console.warn('start date tried to be beyond end date.')
+      start = end
+    @$start.val(date2str start)
+    @$end.val(date2str end)
 
   # Attach an event listener for this timeline.
   # Valid events:
@@ -150,6 +168,9 @@ $ ->
   # Set-up AJAX handler.
   $('#map-date').submit (event) =>
     event.preventDefault()
+    requestJson = timeMachine.getDumpJSON()
+    # Sanitize date request.
+
     # Make request for all segments between |start_date| to |end_date|.
     request = $.getJSON '/mapdata', data=timeMachine.getJumpJSON()
     request.done (data) -> map.drawDates(data)
