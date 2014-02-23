@@ -68,7 +68,9 @@ class TimeMachine
       'zoomMin': 36000000  # Minimum is 1 hour (in ms)
       # 'snapEvents': false
       'style': 'dot'
-      'showCustomTime': true
+      # TODO: Enable this for the 'blue bar' thing for the eventual animation
+      # playback on the timeline.
+      # 'showCustomTime': true
       'unselectable': false
       'selectable': false
       'eventMarginAxis': '-5px'
@@ -243,7 +245,11 @@ $ ->
       # cache refresh from working. Fix later
       # .then timeMachine.refreshCache
 
-  $('#map-date').submit spaceTimeRequest
+  $('#map-date').submit (event) ->
+    event.preventDefault()
+    spaceTimeRequest()
+    return false
+
   # TODO: Implement a toggle between auto-updating the map.
   timeMachine.on 'changed', spaceTimeRequest
 

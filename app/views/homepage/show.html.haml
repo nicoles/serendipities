@@ -6,7 +6,7 @@
   = link_to "logout", logout_path
 
   %form#map-date
-    = date_field_tag 'start', Time.zone.today - 2.day, class: 'start'
+    = date_field_tag 'start', Time.zone.today - 3.day, class: 'start'
     .arrow→
     = date_field_tag 'end', Time.zone.today - 2.day, class: 'end'
 
