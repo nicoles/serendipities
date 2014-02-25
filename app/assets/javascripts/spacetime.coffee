@@ -233,7 +233,7 @@ $ ->
   timeMachine.render()
 
   # AJAX request to db or moves API for current time machine's segment data.
-  spaceTimeRequest = =>
+  spaceTimeRequest = (event) =>
     event.preventDefault()
     if str2date(timeMachine.$end.val()) > new Date()
       console.warn 'Cannot travel into the future yet.'
@@ -244,11 +244,9 @@ $ ->
       # TODO: There's something weird here which is preventing the timeline
       # cache refresh from working. Fix later
       # .then timeMachine.refreshCache
-
-  $('#map-date').submit (event) ->
-    event.preventDefault()
-    spaceTimeRequest()
     return false
+
+  $('#map-date').submit spaceTimeRequest
 
   # TODO: Implement a toggle between auto-updating the map.
   timeMachine.on 'changed', spaceTimeRequest
