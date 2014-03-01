@@ -234,7 +234,7 @@ $ ->
 
   # AJAX request to db or moves API for current time machine's segment data.
   spaceTimeRequest = (event) =>
-    event.preventDefault()
+    event.preventDefault() if event
     if str2date(timeMachine.$end.val()) > new Date()
       console.warn 'Cannot travel into the future yet.'
       return
