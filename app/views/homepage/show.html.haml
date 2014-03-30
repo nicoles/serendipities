@@ -2,7 +2,6 @@
   %form#map-date
     = date_field_tag 'start', Time.zone.today - 2.day, class: 'start'
     = date_field_tag 'end', Time.zone.today - 2.day, class: 'end'
-    = hidden_field_tag 'user_id', current_user.id, class: 'user_id'
 
     = submit_tag 'Go!'
 
