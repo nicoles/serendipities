@@ -23,6 +23,14 @@ module AuthenticationConcern
     !session[:user_id].nil?
   end
 
+  def admin?
+    authenticated? && current_user.admin?
+  end
+
+  def require_user_be_admin!
+    unauthorized! unless admin?
+  end
+
   def ensure_authenticated!
     return if authenticated?
     redirect_to '/auth/moves'
