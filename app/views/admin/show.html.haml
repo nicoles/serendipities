@@ -2,7 +2,7 @@ admin
 
 .controls
   %form#map-date
-    = select "user", "user_id", User.all.collect {|p| [p.moves_oauth_credentials.uid, p.id]}
+    = select "user", "user_id", User.all.collect {|p| [p.moves_oauth_credentials.uid, p.id]}, {}, {class: 'user_id'}
     = date_field_tag 'start', Time.zone.today - 2.day, class: 'start'
     = date_field_tag 'end', Time.zone.today - 2.day, class: 'end'
     = submit_tag 'Go!'

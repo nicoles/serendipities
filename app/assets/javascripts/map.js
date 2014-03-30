@@ -78,7 +78,7 @@ $(function(){
     event.preventDefault();
     var start_date = $(this).find('input.start').val();
     var end_date = $(this).find('input.end').val();
-    var user_id = $(this).find('input.user_id').val();
+    var user_id = $(this).find('.user_id').val();
 
     var request = $.ajax({
       method: 'GET',
