@@ -3,7 +3,7 @@ Serendipities
 
 For now, a moves-app viewer. Soon... better!
 
-Up and running: https://radiant-cove-3469.herokuapp.com/
+Up and running: https://serendipities.herokuapp.com/
 
 Goals
 -----
