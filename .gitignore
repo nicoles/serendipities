@@ -15,3 +15,7 @@
 /log/*.log
 /tmp
 .env
+
+# Linux lock files
+*.swp
+*.swo
