@@ -111,6 +111,7 @@ GEM
       omniauth (~> 1.2)
     pg (0.16.0)
     polyglot (0.3.3)
+    promise (0.3.0)
     pry (0.9.12.2)
       coderay (~> 1.0.5)
       method_source (~> 0.8)
@@ -199,6 +200,7 @@ DEPENDENCIES
   moves
   omniauth-moves!
   pg
+  promise (>= 0.3.0)
   pry-rails
   rails (= 4.0.0)
   rails_12factor

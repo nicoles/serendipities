@@ -12,10 +12,6 @@
 
     = submit_tag 'Go!'
 
-  Notes: Requests cache the moves data to the db, to reduce load on moves' api, so you probably don't want to search for the current day. Loading a ton of days will take a while to load.
-  %a{ :href => 'https://github.com/nicoles/serendipities', :target => '_blank' } Help make this suck less!
-  = link_to "logout", logout_path
-
   - if current_user.admin
     = current_user.moves_oauth_credentials.uid
     = link_to "admin", admin_path
