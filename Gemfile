@@ -1,21 +1,24 @@
 source 'https://rubygems.org'
-ruby "2.0.0"
+ruby "2.2.2"
 
-gem 'rails', '4.0.0'
+gem 'rails', '4.2.6'
 gem 'pg'
-gem 'sass-rails', '~> 4.0.0'
+gem 'sass-rails'
+gem 'coffee-rails'
 gem 'haml-rails'
-gem 'uglifier', '>= 1.3.0'
+gem 'uglifier'
 gem 'jquery-rails'
 gem 'unicorn'
 gem 'moves'
-gem 'omniauth-moves', github: 'nickelser/omniauth-moves'
+gem 'oauth2', '0.9.4'
+gem 'omniauth-twitter'
+gem 'omniauth-moves'
 gem 'leaflet-rails'
 gem 'rails_12factor', group: :production
 
 group :development, :test do
   gem 'pry-rails'
-  gem 'debugger'
+  gem 'pry-byebug'
   gem 'rspec-rails'
   gem 'dotenv-rails'
 end
