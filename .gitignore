@@ -15,3 +15,6 @@
 /log/*.log
 /tmp
 .env
+
+#ignore node_modules
+/node_modules/

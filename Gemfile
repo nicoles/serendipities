@@ -14,6 +14,7 @@ gem 'oauth2', '0.9.4'
 gem 'omniauth-twitter'
 gem 'omniauth-moves'
 gem 'leaflet-rails'
+gem "browserify-rails"
 gem 'rails_12factor', group: :production
 
 group :development, :test do

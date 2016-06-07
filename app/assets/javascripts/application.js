@@ -15,3 +15,4 @@
 //= require leaflet.js
 //= require leaflet-providers
 //= require_tree .
+var mapboxgl = require('mapbox-gl');

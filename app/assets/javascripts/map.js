@@ -1,78 +1,87 @@
-function Map(id){
-  this.id = id;
-  this.leaflet = L.map('map');
-  this.tiles = L.tileLayer.provider('Stamen.TonerLite');
+var mapboxgl = require('mapbox-gl');
+mapboxgl.accessToken = 'pk.eyJ1Ijoibmljb2xlcyIsImEiOiJjaW9qOXQxdjcwMGVpdTVtMWltZGowZWt3In0.i3Vkkt42Qzx3BMNvbAxQ6Q';
 
-  this.tiles.addTo(this.leaflet);
-  this.dates = [];
-  this.segments = [];
-  this.activities = [];
+function Map(id){
+  var mapbox = new mapboxgl.Map({
+      container: id,
+      style: 'mapbox://styles/mapbox/light-v9'
+  });
 }
 
-Map.prototype.drawDay = function(day){
-  day = $.parseJSON(day);
-  if (!day.segments) return this;
-  this.segments = day.segments;
+// function Map(id){
+//   this.id = id;
+//   this.leaflet = L.map('map');
+//   this.tiles = L.tileLayer.provider('Stamen.TonerLite');
+
+//   this.tiles.addTo(this.leaflet);
+//   this.dates = [];
+//   this.segments = [];
+//   this.activities = [];
+// }
+
+// Map.prototype.drawDay = function(day){
+//   day = $.parseJSON(day);
+//   if (!day.segments) return this;
+//   this.segments = day.segments;
 
 
-  this.segments.forEach(function(segment){
-    if (segment.place) this.addPlaceSegment(segment);
-    if (segment.activities) this.addActivitiesSegment(segment);
-  }, this);
+//   this.segments.forEach(function(segment){
+//     if (segment.place) this.addPlaceSegment(segment);
+//     if (segment.activities) this.addActivitiesSegment(segment);
+//   }, this);
 
-  this.dayLayer.addTo(this.leaflet);
-  this.leaflet.fitBounds(this.dayLayer.getBounds());
-};
+//   this.dayLayer.addTo(this.leaflet);
+//   this.leaflet.fitBounds(this.dayLayer.getBounds());
+// };
 
-Map.prototype.drawDates = function(data){
-  if (!data.dates) return this;
-  this.dates = data.dates;
-  if (this.leaflet.hasLayer(this.dayLayer)){
-    this.dayLayer.clearLayers();
-  }
-  this.dayLayer = L.featureGroup();
-  $.each(data.dates, function(index, date){
-    map.drawDay(date);
-  });
-};
+// Map.prototype.drawDates = function(data){
+//   if (!data.dates) return this;
+//   this.dates = data.dates;
+//   if (this.leaflet.hasLayer(this.dayLayer)){
+//     this.dayLayer.clearLayers();
+//   }
+//   this.dayLayer = L.featureGroup();
+//   $.each(data.dates, function(index, date){
+//     map.drawDay(date);
+//   });
+// };
 
-Map.prototype.addPlaceSegment = function(segment){
+// Map.prototype.addPlaceSegment = function(segment){
 
-};
+// };
 
-Map.prototype.addActivitiesSegment = function(segment){
-  this.activities = this.activities.concat(segment.activities);
-  segment.activities.forEach(function(activity){
-    this.addActivity(activity);
-  }, this);
-};
+// Map.prototype.addActivitiesSegment = function(segment){
+//   this.activities = this.activities.concat(segment.activities);
+//   segment.activities.forEach(function(activity){
+//     this.addActivity(activity);
+//   }, this);
+// };
 
-Map.ActivityColors = {
-  'wlk':'green',
-  'trp':'black',
-  'cyc':'blue',
-  'run':'red'
-};
+// Map.ActivityColors = {
+//   'wlk':'green',
+//   'trp':'black',
+//   'cyc':'blue',
+//   'run':'red'
+// };
 
-Map.prototype.addActivity = function(activity){
-  var trackPoints, color;
+// Map.prototype.addActivity = function(activity){
+//   var trackPoints, color;
 
-  trackPoints = activity.trackPoints.map(function(trackPoint){
-    return new L.LatLng(trackPoint.lat,trackPoint.lon);
-  });
+//   trackPoints = activity.trackPoints.map(function(trackPoint){
+//     return new L.LatLng(trackPoint.lat,trackPoint.lon);
+//   });
 
-  color = Map.ActivityColors[activity.activity] || 'gray';
-  L.polyline(trackPoints, {color: color}).addTo(this.dayLayer);
-};
+//   color = Map.ActivityColors[activity.activity] || 'gray';
+//   L.polyline(trackPoints, {color: color}).addTo(this.dayLayer);
+// };
 
 
 $(function(){
-
-  map = new Map('map');
-
   var height = $(window).height();
   var scale = 0.9;
   $(".map").css('height', height * scale);
+
+  map = new Map('map');
 
   $('#map-date').submit(function(event) {
     event.preventDefault();
