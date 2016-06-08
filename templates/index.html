@@ -1,0 +1,28 @@
+<html>
+
+<head>
+  <title>Serendipities</title>
+</head>
+
+<body>
+<h1>Serendipities</h1>
+
+<p>
+Hi! Maps live inside me.
+</p>
+
+{{ if .Token }}
+Currently connected to Moves.
+
+  Token: {{ .Token }}
+
+  <a href="">Logout</a> (TODO)
+
+{{ else }}
+Sign up with moves:
+<a href="{{ .MovesURL }}">Authorize</a>
+{{ end }}
+
+
+</body>
+</html>
