@@ -3,13 +3,14 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/joho/godotenv"
 	"golang.org/x/oauth2"
 	"html/template"
+	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
-  "io/ioutil"
-  "log"
-  "time"
+	"time"
 )
 
 const (
@@ -63,10 +64,10 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 // Callback once moves has authorized.
 func authHandler(w http.ResponseWriter, r *http.Request) {
-  if nil != token {
-    fmt.Fprintf(w, "Already authorized with Moves.")
-    return
-  }
+	if nil != token {
+		fmt.Fprintf(w, "Already authorized with Moves.")
+		return
+	}
 
 	// Check for auth error.
 	errors := r.FormValue("errors")
@@ -85,10 +86,10 @@ func authHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func tokenHandler(w http.ResponseWriter, r *http.Request) {
-  if nil != token {
-    fmt.Fprintf(w, "Already authorized with Moves.")
-    return
-  }
+	if nil != token {
+		fmt.Fprintf(w, "Already authorized with Moves.")
+		return
+	}
 	if "" == code {
 		fmt.Fprintf(w, "No auth code yet.")
 		w.WriteHeader(http.StatusBadRequest)
@@ -102,39 +103,43 @@ func tokenHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	b, _ := json.Marshal(token)
-	fmt.Fprintf(w, "Moves Token: " + string(b))
+	fmt.Fprintf(w, "Moves Token: "+string(b))
 }
 
 func setTokenHandler(w http.ResponseWriter, r *http.Request) {
-  log.Println(r.Method)
-  if "POST" != r.Method {
-    fmt.Fprintln(w, "GET not allowed.")
-    w.WriteHeader(http.StatusMethodNotAllowed)
-    return
-  }
-  body, _ := ioutil.ReadAll(r.Body)
-  log.Println("Received " + string(body))
+	log.Println(r.Method)
+	if "POST" != r.Method {
+		fmt.Fprintln(w, "GET not allowed.")
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		return
+	}
+	body, _ := ioutil.ReadAll(r.Body)
+	log.Println("Received " + string(body))
 
-  var parsed map[string]interface{}
-  json.Unmarshal(body, &parsed) 
-  token = &oauth2.Token{
-    AccessToken: parsed["access_token"].(string),
-    TokenType: parsed["token_type"].(string),
-    RefreshToken: parsed["refresh_token"].(string),
-    Expiry: parsed["expiry"].(time.Time),
-  }
-  log.Println(token)
-  // for k, v := range r.Form { 
-    // log.Println("omg")
-    // log.Println(k)
-    // log.Println(v)
-  // }
-  // fmt.Fprintln(w, "Received " + string(body))
-  // fmt.Fprintln(w, "Received " + token)
-  // json.Unmar
+	var parsed map[string]interface{}
+	json.Unmarshal(body, &parsed)
+	token = &oauth2.Token{
+		AccessToken:  parsed["access_token"].(string),
+		TokenType:    parsed["token_type"].(string),
+		RefreshToken: parsed["refresh_token"].(string),
+		Expiry:       parsed["expiry"].(time.Time),
+	}
+	log.Println(token)
+	// for k, v := range r.Form {
+	// log.Println("omg")
+	// log.Println(k)
+	// log.Println(v)
+	// }
+	// fmt.Fprintln(w, "Received " + string(body))
+	// fmt.Fprintln(w, "Received " + token)
+	// json.Unmar
 }
 
 func main() {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
 
 	key := os.Getenv("MOVES_KEY")
 	secret := os.Getenv("MOVES_SECRET")
