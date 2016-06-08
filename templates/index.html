@@ -1,6 +1,40 @@
 <html>
 
 <head>
+  <script>
+  function setToken(token) {
+    let xhr = new XMLHttpRequest();
+    // let data = new FormData();
+    // data.append("token", token);
+    try {
+      xhr.open('POST', 'settoken', true)
+      xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+      // TODO: fix
+      // xhr.send(token);
+    } catch(err) {
+      console.log(err);
+    }
+  }
+  token = localStorage.getItem("token"); 
+  token = token.trim()
+  $token = document.getElementById("token");
+  window.onload = function() {
+    token = localStorage.getItem("token");
+    $token = document.getElementById("token");
+    if (null == token) {
+      console.log("No token stored. Need auth.")
+      if ($token) {
+        token = $token.innerHTML;
+        localStorage.setItem("token", token)
+      }
+    } else {
+      console.log("Token already provided.")
+      if (null == $token) {
+        setToken(token);
+      }
+    }
+  }
+  </script>
   <title>Serendipities</title>
 </head>
 
@@ -14,15 +48,17 @@ Hi! Maps live inside me.
 {{ if .Token }}
 Currently connected to Moves.
 
-  Token: {{ .Token }}
+  Token:
+  <div id="token">
+  {{ .Token }}
+  </div>
 
   <a href="">Logout</a> (TODO)
 
 {{ else }}
-Sign up with moves:
-<a href="{{ .MovesURL }}">Authorize</a>
+  Sign up with moves:
+  <a href="{{ .MovesURL }}">Authorize</a>
 {{ end }}
-
 
 </body>
 </html>

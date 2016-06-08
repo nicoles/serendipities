@@ -7,6 +7,9 @@ import (
 	"html/template"
 	"net/http"
 	"os"
+  "io/ioutil"
+  "log"
+  "time"
 )
 
 const (
@@ -99,7 +102,36 @@ func tokenHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	b, _ := json.Marshal(token)
-	fmt.Fprintf(w, "Moves Token:  "+string(b))
+	fmt.Fprintf(w, "Moves Token: " + string(b))
+}
+
+func setTokenHandler(w http.ResponseWriter, r *http.Request) {
+  log.Println(r.Method)
+  if "POST" != r.Method {
+    fmt.Fprintln(w, "GET not allowed.")
+    w.WriteHeader(http.StatusMethodNotAllowed)
+    return
+  }
+  body, _ := ioutil.ReadAll(r.Body)
+  log.Println("Received " + string(body))
+
+  var parsed map[string]interface{}
+  json.Unmarshal(body, &parsed) 
+  token = &oauth2.Token{
+    AccessToken: parsed["access_token"].(string),
+    TokenType: parsed["token_type"].(string),
+    RefreshToken: parsed["refresh_token"].(string),
+    Expiry: parsed["expiry"].(time.Time),
+  }
+  log.Println(token)
+  // for k, v := range r.Form { 
+    // log.Println("omg")
+    // log.Println(k)
+    // log.Println(v)
+  // }
+  // fmt.Fprintln(w, "Received " + string(body))
+  // fmt.Fprintln(w, "Received " + token)
+  // json.Unmar
 }
 
 func main() {
@@ -110,7 +142,6 @@ func main() {
 	fmt.Println("Moves Secret: ", secret)
 
 	config = &oauth2.Config{
-		// config = {
 		ClientID:     key,
 		ClientSecret: secret,
 		Scopes:       []string{"activity location"},
@@ -122,6 +153,7 @@ func main() {
 	http.HandleFunc("/", handler)
 	http.HandleFunc("/auth/moves/callback", authHandler)
 	http.HandleFunc("/gettoken", tokenHandler)
+	http.HandleFunc("/settoken", setTokenHandler)
 
 	fmt.Println("Serving on localhost:3000...")
 	http.ListenAndServe(":3000", nil)
