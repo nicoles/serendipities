@@ -1,3 +1,3 @@
 #!/bin/bash
 
-go run moves.go 
+go build && ./serendipities

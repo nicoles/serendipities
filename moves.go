@@ -3,6 +3,7 @@ package main
 
 import (
 	"fmt"
+  "errors"
 	"golang.org/x/oauth2"
 )
 
@@ -57,23 +58,23 @@ func (m *MovesAPI) GetAuthURL() string {
 
 // Exchange a code for a Token to authorize for Moves API.
 func (m *MovesAPI) GetToken() error {
-	if "" == moves.AuthCode {
-		panic("GetToken should never be called without AuthCode.")
+	if nil != moves.Token {
+    return errors.New("MovesAPI already has Token.")
 	}
-	tokenURL := setTokenURL(m.AuthCode, m.Config.ClientID, m.Config.ClientSecret)
-	m.Config.Endpoint.TokenURL = tokenURL
-	// Obtain moves token.
+	if "" == moves.AuthCode {
+    return errors.New("MovesAPI has no AuthCode available yet.")
+	}
+	// For some reason, Moves requires entries in the query string as well as the
+	// POST, so override the TokenURL.
+	m.Config.Endpoint.TokenURL = fmt.Sprintf(MovesTokenURLFmt,
+		m.AuthCode, m.Config.ClientID, m.Config.ClientSecret)
+
+	// Exchange AuthCode for Moves Token.
 	received, er := m.Config.Exchange(oauth2.NoContext, m.AuthCode)
 	if nil != er || nil == received {
 		return er
 	}
-	// Set the new Token and eliminate obsolete auth code.
-	m.Token = received
 	m.AuthCode = ""
+	m.Token = received
 	return nil
-}
-
-// For some reason, Moves requires the query string with the POST...
-func setTokenURL(code, id, secret string) string {
-	return fmt.Sprintf(MovesTokenURLFmt, code, id, secret)
 }

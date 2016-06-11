@@ -12,7 +12,7 @@ import (
 
 var moves *MovesAPI
 
-func handler(w http.ResponseWriter, r *http.Request) {
+func indexHandler(w http.ResponseWriter, r *http.Request) {
 	url := moves.GetAuthURL()
 	fmt.Println("\nUsing Moves API URL: \n", url)
 
@@ -42,29 +42,24 @@ func authHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	moves.AuthCode = r.FormValue("code")
+  // Must redirect so Moves doesn't cause incorrectly duplicated callback.
 	http.Redirect(w, r, "/gettoken", 301)
 }
 
-// Handler which assumes and exchanges.
+// Expected to be requested only as part of redirect from authHandler.
+// Exchanges auth code for actual token.
 func getTokenHandler(w http.ResponseWriter, r *http.Request) {
-	if nil != moves.Token {
-		fmt.Fprintf(w, "Already authorized with Moves.")
-		return
-	}
-	if "" == moves.AuthCode {
-		fmt.Fprintf(w, "No auth code fetched yet.")
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
 	err := moves.GetToken()
 	if nil != err {
 		fmt.Fprintf(w, "Problem getting token.\n")
 		fmt.Fprintf(w, err.Error())
+		log.Println(w, err.Error())
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 	// Also output the token!
 	b, _ := json.Marshal(moves.Token)
+	fmt.Fprintln(w, "Congratulations, you've authed with MovesAPI.")
 	fmt.Fprintf(w, "Moves Token: "+string(b))
 }
 
@@ -99,10 +94,9 @@ func main() {
 
 	key := os.Getenv("MOVES_KEY")
 	secret := os.Getenv("MOVES_SECRET")
-
 	moves = NewMovesAPI(key, secret)
 
-	http.HandleFunc("/", handler)
+	http.HandleFunc("/", indexHandler)
 	http.HandleFunc("/auth/moves/callback", authHandler)
 	http.HandleFunc("/gettoken", getTokenHandler)
 	// http.HandleFunc("/settoken", setTokenHandler)
