@@ -8,6 +8,8 @@ import (
 	"log"
 	"net/http"
 	"os"
+  "github.com/jinzhu/gorm"
+  _ "github.com/jinzhu/gorm/dialects/postgres"
 )
 
 var moves *MovesAPI
@@ -95,6 +97,17 @@ func main() {
 	key := os.Getenv("MOVES_KEY")
 	secret := os.Getenv("MOVES_SECRET")
 	moves = NewMovesAPI(key, secret)
+
+  dbname := os.Getenv("DATABASE_NAME")
+  dbuser := os.Getenv("DATABASE_USER")
+
+  db, err := gorm.Open("postgres", "user="+dbuser+" dbname="+dbname+" sslmode=disable")
+  if err != nil {
+    panic(err)
+    return
+  }
+
+  db.AutoMigrate(&User{})
 
 	http.HandleFunc("/", indexHandler)
 	http.HandleFunc("/auth/moves/callback", authHandler)
