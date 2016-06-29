@@ -11,10 +11,26 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160628201313) do
+ActiveRecord::Schema.define(version: 20160629155236) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "activities", force: true do |t|
+    t.datetime "start_time"
+    t.datetime "end_time"
+    t.integer  "segment_id",   null: false
+    t.string   "type",         null: false
+    t.string   "group"
+    t.integer  "duration"
+    t.integer  "distance"
+    t.integer  "calories"
+    t.integer  "steps"
+    t.boolean  "manual"
+    t.json     "track_points"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "oauth_credentials", force: true do |t|
     t.string   "type",          limit: nil
@@ -40,17 +56,14 @@ ActiveRecord::Schema.define(version: 20160628201313) do
 
   create_table "segments", force: true do |t|
     t.datetime "start_time",   null: false
-    t.datetime "end_time"
+    t.datetime "end_time",     null: false
+    t.datetime "last_update"
     t.integer  "storyline_id", null: false
-    t.integer  "segment_id"
-    t.string   "segment_type"
     t.boolean  "move",         null: false
     t.integer  "place_id"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
-
-  add_index "segments", ["segment_id", "segment_type"], name: "index_segments_on_segment_id_and_segment_type", using: :btree
 
   create_table "storylines", force: true do |t|
     t.integer  "user_id"
@@ -58,6 +71,8 @@ ActiveRecord::Schema.define(version: 20160628201313) do
     t.json     "moves_data"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.datetime "last_update"
+    t.integer  "calories_idle"
   end
 
   create_table "users", force: true do |t|
