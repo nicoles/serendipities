@@ -13,7 +13,5 @@
 //= require jquery
 //= require jquery_ujs
 //= require leaflet.js
-//= require timeline-min.js
 //= require leaflet-providers
-//= require promise-0.1.1.min.js
 //= require_tree .
