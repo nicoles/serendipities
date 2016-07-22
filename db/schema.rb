@@ -19,9 +19,9 @@ ActiveRecord::Schema.define(version: 20160629155236) do
   create_table "activities", force: true do |t|
     t.datetime "start_time"
     t.datetime "end_time"
-    t.integer  "segment_id",   null: false
-    t.string   "type",         null: false
-    t.string   "group"
+    t.integer  "segment_id",     null: false
+    t.string   "activity_type",  null: false
+    t.string   "activity_group"
     t.integer  "duration"
     t.integer  "distance"
     t.integer  "calories"
@@ -33,11 +33,11 @@ ActiveRecord::Schema.define(version: 20160629155236) do
   end
 
   create_table "oauth_credentials", force: true do |t|
-    t.string   "type",          limit: nil
-    t.string   "uid",           limit: nil
+    t.string   "type"
+    t.string   "uid"
     t.integer  "user_id"
-    t.string   "token",         limit: nil
-    t.string   "refresh_token", limit: nil
+    t.string   "token"
+    t.string   "refresh_token"
     t.datetime "expires_at"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -46,20 +46,24 @@ ActiveRecord::Schema.define(version: 20160629155236) do
   create_table "places", force: true do |t|
     t.integer  "moves_id"
     t.string   "name"
-    t.string   "source"
-    t.string   "source_guid"
-    t.decimal  "latitude",    precision: 10, scale: 6, null: false
-    t.decimal  "longitude",   precision: 10, scale: 6, null: false
+    t.string   "place_type"
+    t.string   "facebook_place_id"
+    t.string   "foursquare_id"
+    t.string   "foursquare_category_ids",                                       array: true
+    t.decimal  "latitude",                precision: 10, scale: 6, null: false
+    t.decimal  "longitude",               precision: 10, scale: 6, null: false
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  add_index "places", ["foursquare_category_ids"], name: "index_places_on_foursquare_category_ids", using: :gin
 
   create_table "segments", force: true do |t|
     t.datetime "start_time",   null: false
     t.datetime "end_time",     null: false
     t.datetime "last_update"
     t.integer  "storyline_id", null: false
-    t.boolean  "move",         null: false
+    t.string   "segment_type", null: false
     t.integer  "place_id"
     t.datetime "created_at"
     t.datetime "updated_at"
