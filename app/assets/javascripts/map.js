@@ -1,19 +1,18 @@
+var mapboxgl = require('mapbox-gl');
+mapboxgl.accessToken = $('head').data('mapbox_token');
+
 function Map(id){
   this.id = id;
-  this.leaflet = L.map('map');
-  this.tiles = L.tileLayer.provider('Stamen.TonerLite');
-
-  this.tiles.addTo(this.leaflet);
+  this.mapbox = new mapboxgl.Map({
+    container: this.id,
+    style: 'mapbox://styles/mapbox/light-v9',
+    center: [-122.4, 37.8], // starting position
+    zoom: 11 // starting zoom
+  });
   this.dates = [];
   this.segments = [];
-  this.activities = [];
-}
-
-Map.prototype.drawDay = function(day){
-  day = $.parseJSON(day);
-  if (!day.segments) return this;
-  this.segments = day.segments;
-
+  this.activities =[];
+  this.sources =[];
 
   this.segments.forEach(function(segment){
     if (segment.place) this.addPlaceSegment(segment);
@@ -65,9 +64,8 @@ Map.prototype.addActivity = function(activity){
   L.polyline(trackPoints, {color: color}).addTo(this.dayLayer);
 };
 
-
+// on dom~~
 $(function(){
-
   map = new Map('map');
 
   var height = $(window).height();
