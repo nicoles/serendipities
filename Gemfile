@@ -11,7 +11,7 @@ gem 'unicorn'
 gem 'moves'
 gem 'omniauth-moves', github: 'nickelser/omniauth-moves'
 gem 'oauth2', '0.9.4'
-gem 'leaflet-rails'
+gem 'browserify-rails'
 gem 'rails_12factor', group: :production
 
 group :development, :test do

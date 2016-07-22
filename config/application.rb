@@ -11,6 +11,8 @@ require "sprockets/railtie"
 # you've limited to :test, :development, or :production.
 Bundler.require(:default, Rails.env)
 
+
+
 module Serendipities
   class Application < Rails::Application
     # Settings in config/environments/* take precedence over those specified here.
@@ -24,5 +26,9 @@ module Serendipities
     # The default locale is :en and all translations from config/locales/*.rb,yml are auto loaded.
     # config.i18n.load_path += Dir[Rails.root.join('my', 'locales', '*.{rb,yml}').to_s]
     # config.i18n.default_locale = :de
+
+
+    config.browserify_rails.commandline_options = "-t [ babelify --presets [ es2015 ] ]"
+    config.browserify_rails.source_map_environments << "development"
   end
 end
