@@ -14,54 +14,44 @@ function Map(id){
   this.activities =[];
   this.sources =[];
 
-  this.segments.forEach(function(segment){
-    if (segment.place) this.addPlaceSegment(segment);
-    if (segment.activities) this.addActivitiesSegment(segment);
-  }, this);
+}
 
-  this.dayLayer.addTo(this.leaflet);
-  this.leaflet.fitBounds(this.dayLayer.getBounds());
+Map.prototype.removeSources = function(sources){
+  // TODO doesn't work yet :(
+  $.each(sources, function(source){
+    map.mapbox.removeLayer(source);
+    map.mapbox.removeSource(source);
+  });
+  map.sources =[];
 };
 
-Map.prototype.drawDates = function(data){
-  if (!data.dates) return this;
-  this.dates = data.dates;
-  if (this.leaflet.hasLayer(this.dayLayer)){
-    this.dayLayer.clearLayers();
-  }
-  this.dayLayer = L.featureGroup();
-  $.each(data.dates, function(index, date){
-    map.drawDay(date);
+Map.prototype.buildSources = function(features){
+  $.each(features, function(index, feature){
+    map.mapbox.addSource(feature.properties.type, {
+      "type": "geojson",
+      "data": feature
+    });
+    map.sources.push(feature.properties.type);
   });
 };
 
-Map.prototype.addPlaceSegment = function(segment){
-
-};
-
-Map.prototype.addActivitiesSegment = function(segment){
-  this.activities = this.activities.concat(segment.activities);
-  segment.activities.forEach(function(activity){
-    this.addActivity(activity);
-  }, this);
-};
-
-Map.ActivityColors = {
-  'wlk':'green',
-  'trp':'black',
-  'cyc':'blue',
-  'run':'red'
-};
-
-Map.prototype.addActivity = function(activity){
-  var trackPoints, color;
-
-  trackPoints = activity.trackPoints.map(function(trackPoint){
-    return new L.LatLng(trackPoint.lat,trackPoint.lon);
+Map.prototype.renderLayers = function(features){
+  $.each(features, function(index, feature){
+    map.mapbox.addLayer({
+      "id": feature.properties.type,
+      "source": feature.properties.type,
+      "type": "line",
+      "layout": {
+        "line-join": "round",
+        "line-cap": "round"
+      },
+      "paint": {
+        "line-color": feature.properties.color,
+        "line-width": 1,
+        "line-opacity": 0.7
+      }
+    });
   });
-
-  color = Map.ActivityColors[activity.activity] || 'gray';
-  L.polyline(trackPoints, {color: color}).addTo(this.dayLayer);
 };
 
 // on dom~~
@@ -87,12 +77,13 @@ $(function(){
       }
     });
 
-    request.done(function(data){
-      map.drawDates(data);
+    request.done(function(result){
+      if(map.sources.length) map.removeSources(map.sources);
+      map.buildSources(result);
+      map.renderLayers(result);
     });
   });
 });
-
 
 $(window).resize(function(){
   var height = $(window).height();
