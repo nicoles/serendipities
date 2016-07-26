@@ -17,8 +17,7 @@ function Map(id){
 }
 
 Map.prototype.removeSources = function(sources){
-  // TODO doesn't work yet :(
-  $.each(sources, function(source){
+  $.each(this.sources, function(index, source){
     map.mapbox.removeLayer(source);
     map.mapbox.removeSource(source);
   });
@@ -56,7 +55,7 @@ Map.prototype.renderLayers = function(features){
 
 // on dom~~
 $(function(){
-  map = new Map('map');
+  window.map = new Map('movesMap');
 
   var height = $(window).height();
   var scale = 0.9;
