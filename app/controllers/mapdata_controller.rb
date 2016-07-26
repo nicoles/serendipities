@@ -85,6 +85,7 @@ class MapdataController < ApplicationController
     render json: @activities_geojson
   end
 
+  # TODO: move this into activity and test it
   def build_activity_feature(activity, activity_collection)
     colors = {
       kayaking: "#1390d4",
@@ -99,11 +100,15 @@ class MapdataController < ApplicationController
       skateboarding: "#ff8c3b",
       bus: "#848484",
       ferry: "#848484",
+      scooter: "#848484"
     }
 
     coordinates = []
-    activity.track_points["points"].each do |point|
-      coordinates.push([point["lon"], point["lat"]])
+    # you wouldn't think this was necessary...
+    unless activity.track_points == nil
+      activity.track_points["points"].each do |point|
+        coordinates.push([point["lon"], point["lat"]])
+      end
     end
     activity_collection << {
       type: "Feature",
@@ -117,7 +122,6 @@ class MapdataController < ApplicationController
           type: "LineString",
           coordinates: coordinates
         }
-      }
-    end
+    }
   end
-
+end
