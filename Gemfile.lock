@@ -197,7 +197,7 @@ DEPENDENCIES
   binding_of_caller
   browserify-rails
   dotenv-rails
-  factory_girl_rails
+  factory_girl_rails (~> 4.0)
   haml-rails
   jquery-rails
   moves
