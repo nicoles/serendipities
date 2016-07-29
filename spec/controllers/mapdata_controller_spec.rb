@@ -15,13 +15,14 @@ describe MapdataController do
     end
 
     context 'when signed in' do
+      let(:user) { create(:user) }
+
       before do
-        # get signed in. who knows
-        user = User.last
         sign_in user
       end
 
-      it 'returns geojson for a pair of dates' do
+      it 'renders some json' do
+        pending
         get :show, start_date: start_date, end_date: end_date
 
         expect(response).to be_success
