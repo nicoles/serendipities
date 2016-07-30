@@ -1,6 +1,8 @@
 Serendipities
 =============
 
+[![CircleCI](https://circleci.com/gh/nicoles/serendipities.svg?style=svg)](https://circleci.com/gh/nicoles/serendipities)
+
 For now, a moves-app viewer. Soon... better!
 
 Up and running: https://serendipities.herokuapp.com/
