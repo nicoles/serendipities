@@ -1,11 +1,11 @@
 var mapboxgl = require('mapbox-gl');
 mapboxgl.accessToken = $('head').data('mapbox_token');
 
-function Map(id){
+function ExploreMap(id){
   this.id = id;
   this.mapbox = new mapboxgl.Map({
     container: this.id,
-    style: 'mapbox://styles/mapbox/light-v9',
+    style: 'mapbox://styles/nicoles/cixgqutoo00fs2psfk3ywsrhq',
     center: [-122.4, 37.8], // starting position
     zoom: 11 // starting zoom
   });
@@ -16,27 +16,27 @@ function Map(id){
 
 }
 
-Map.prototype.removeSources = function(sources){
+ExploreMap.prototype.removeSources = function(sources){
   $.each(this.sources, function(index, source){
-    map.mapbox.removeLayer(source);
-    map.mapbox.removeSource(source);
+    exploreMap.mapbox.removeLayer(source);
+    exploreMap.mapbox.removeSource(source);
   });
-  map.sources =[];
+  exploreMap.sources =[];
 };
 
-Map.prototype.buildSources = function(features){
+ExploreMap.prototype.buildSources = function(features){
   $.each(features, function(index, feature){
-    map.mapbox.addSource(feature.properties.type, {
+    exploreMap.mapbox.addSource(feature.properties.type, {
       "type": "geojson",
       "data": feature
     });
-    map.sources.push(feature.properties.type);
+    exploreMap.sources.push(feature.properties.type);
   });
 };
 
-Map.prototype.renderLayers = function(features){
+ExploreMap.prototype.renderLayers = function(features){
   $.each(features, function(index, feature){
-    map.mapbox.addLayer({
+    exploreMap.mapbox.addLayer({
       "id": feature.properties.type,
       "source": feature.properties.type,
       "type": "line",
@@ -46,20 +46,23 @@ Map.prototype.renderLayers = function(features){
       },
       "paint": {
         "line-color": feature.properties.color,
-        "line-width": 1,
-        "line-opacity": 0.7
+
+        "line-opacity": 0.8
       }
     });
   });
 };
 
-// on dom~~
-$(function(){
-  window.map = new Map('movesMap');
+window.setupExploreMap = function(){
+  var $explore = $(".exploreMap");
+  if (!$explore.exists()) {
+    return;
+  }
+  window.exploreMap = new ExploreMap('exploreMap');
 
   var height = $(window).height();
   var scale = 0.9;
-  $(".map").css('height', height * scale);
+  $explore.css('height', height * scale);
 
   $('#map-date').submit(function(event) {
     event.preventDefault();
@@ -77,17 +80,17 @@ $(function(){
     });
 
     request.done(function(result){
-      if(map.sources.length) map.removeSources(map.sources);
-      map.buildSources(result);
-      map.renderLayers(result);
+      if(exploreMap.sources.length) exploreMap.removeSources(exploreMap.sources);
+      exploreMap.buildSources(result);
+      exploreMap.renderLayers(result);
     });
   });
-});
+};
 
 $(window).resize(function(){
   var height = $(window).height();
   var scale = 0.9;
-  $(".map").css('height', height * scale);
+  $(".exploreMap").css('height', height * scale);
 });
 
 

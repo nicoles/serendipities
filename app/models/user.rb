@@ -26,16 +26,26 @@ class User < ActiveRecord::Base
     @moves ||= Moves::Client.new(oauth_credentials.first.token)
   end
 
-  def storyline_json_for_dates(start_date, end_date)
+  def storyline_json_for_dates(start_date, end_date, places)
     @activity_collection = []
     @activities_geojson = []
     start_date.upto(end_date) do |date|
       if !self.storylines.find_by_story_date(date).blank?
         # get features from db if present
-        moves = self.storylines.find_by_story_date(date).segments.where(segment_type: "move")
-        moves.each do |move|
-          move.activities.each do |activity|
-            build_activity_feature(activity, @activity_collection)
+        if (places == true)
+          moves = self.storylines.find_by_story_date(date).segments.where(segment_type: "move")
+          moves.each do |move|
+            move.activities.each do |activity|
+              build_activity_feature(activity, @activity_collection)
+            end
+          end
+        end
+        if (places == false)
+          moves = self.storylines.find_by_story_date(date).segments.where(segment_type: "move")
+          moves.each do |move|
+            move.activities.each do |activity|
+              build_activity_feature(activity, @activity_collection)
+            end
           end
         end
       else
@@ -46,7 +56,7 @@ class User < ActiveRecord::Base
           last_update:   moves_response["lastUpdate"],
           calories_idle: moves_response["caloriesIdle"]
           )
-        moves_response["segments"].each do |segment|
+         moves_response["segments"].each do |segment|
           seg = storyline.segments.create(
             start_time:   segment["startTime"],
             end_time:     segment["endTime"],
@@ -67,7 +77,6 @@ class User < ActiveRecord::Base
             seg.place_id = seg_place.id
             seg.save
           end
-          puts segment["activities"]
           if (segment["activities"])
             segment["activities"].each do |activity|
               act = seg.activities.create(
@@ -139,11 +148,12 @@ class User < ActiveRecord::Base
         group: activity.activity_group,
         startTime: activity.start_time,
         color: colors[activity.activity_type.to_sym]
-        },
-        geometry: {
-          type: "LineString",
-          coordinates: coordinates
-        }
+      },
+      geometry: {
+        type: "LineString",
+        coordinates: coordinates
+      }
     }
   end
 end
+
